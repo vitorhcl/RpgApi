@@ -44,7 +44,7 @@ namespace RpgApi.Controllers
 
         [HttpPut]
         public IActionResult UpdatePersonagem(Personagem p) {
-            Personagem personagemAlterado = personagens.Find(pe => pe.Id == p.Id);
+            Personagem? personagemAlterado = personagens.Find(pe => pe.Id == p.Id);
             personagemAlterado.Nome = p.Nome;
             personagemAlterado.PontosVida = p.PontosVida;
             personagemAlterado.Forca = p.Forca;
