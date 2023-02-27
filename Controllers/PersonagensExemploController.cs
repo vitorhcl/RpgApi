@@ -66,6 +66,17 @@ namespace RpgApi.Controllers
             Personagem personagem = personagens.Find(p => p.Forca == forca);
             return Ok(personagem);
         }
+
+        [HttpGet("GetByEnum/{enumId}")]
+        public IActionResult GetByEnum(int enumId) {
+            //Conversao explicita de int para enum
+            ClasseEnum enumDigitado = (ClasseEnum)enumId;
+
+            List<Personagem> listaBusca = personagens.FindAll(p => p.Classe == enumDigitado);
+
+            return Ok(listaBusca);
+        }
+
         [HttpGet("GetSomaForca")]
         public IActionResult GetSomaForca() {
             return Ok(personagens.Sum(pe => pe.Forca));
