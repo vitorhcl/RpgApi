@@ -31,6 +31,12 @@ namespace RpgApi.Controllers
             return Ok(personagens[0]);
         }
 
+        [HttpGet("GetOrdenado")]
+        public IActionResult GetOrdem() {
+            List<Personagem> listaFinal = personagens.OrderBy(p => p.Forca).ToList();
+            return Ok(listaFinal);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetSingle(int id) {
             return Ok(personagens.FirstOrDefault(pe => pe.Id == id));
