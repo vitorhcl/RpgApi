@@ -53,5 +53,11 @@ namespace RpgApi.Controllers
             personagemAlterado.Classe = p.Classe;
             return Ok(personagens);
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id) {
+            personagens.RemoveAll(pe => pe.Id == id);
+            return Ok(personagens);
+        }
     }
 }
