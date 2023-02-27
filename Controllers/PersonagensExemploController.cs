@@ -35,5 +35,11 @@ namespace RpgApi.Controllers
         public IActionResult GetSingle(int id) {
             return Ok(personagens.FirstOrDefault(pe => pe.Id == id));
         }
+
+        [HttpPost]
+        public IActionResult AddPersonagem(Personagem personagem) {
+            personagens.Add(personagem);
+            return Ok(personagens);
+        }
     }
 }
