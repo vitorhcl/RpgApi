@@ -48,7 +48,13 @@ namespace RpgApi.Controllers
             return Ok(listaBusca);
         }
 
-            [HttpGet("GetSomaForca")]
+        [HttpGet("GetNomeAproximado/{nome}")]
+        public IActionResult GetByNomeAproximado(string nome) {
+            List<Personagem> listaBusca = personagens.FindAll(pe => pe.Nome.Contains(nome));
+            return Ok(listaBusca);
+        }
+
+        [HttpGet("GetSomaForca")]
         public IActionResult GetSomaForca() {
             return Ok(personagens.Sum(pe => pe.Forca));
         }
