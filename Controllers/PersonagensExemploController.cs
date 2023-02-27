@@ -88,8 +88,11 @@ namespace RpgApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddPersonagem(Personagem personagem) {
-            personagens.Add(personagem);
+        public IActionResult AddPersonagem(Personagem novoPersonagem) {
+            if (novoPersonagem.Inteligencia == 0)
+                return BadRequest("Inteligência não pode ter o valor igual a 0 (zero).");
+            
+            personagens.Add(novoPersonagem);
             return Ok(personagens);
         }
 
