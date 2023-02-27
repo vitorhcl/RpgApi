@@ -60,6 +60,12 @@ namespace RpgApi.Controllers
             personagens.Remove(pRemove);
             return Ok("Personagem removido: " + pRemove.Nome);
         }
+
+        [HttpGet("GetByForca/{forca}")]
+        public IActionResult Get(int forca) {
+            Personagem personagem = personagens.Find(p => p.Forca == forca);
+            return Ok(personagem);
+        }
         [HttpGet("GetSomaForca")]
         public IActionResult GetSomaForca() {
             return Ok(personagens.Sum(pe => pe.Forca));
