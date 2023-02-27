@@ -37,6 +37,11 @@ namespace RpgApi.Controllers
             return Ok(listaFinal);
         }
 
+        [HttpGet("GetContagem")]
+        public IActionResult GetQuantidade() {
+            return Ok("Quantidade de personagens: " + personagens.Count);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetSingle(int id) {
             return Ok(personagens.FirstOrDefault(pe => pe.Id == id));
