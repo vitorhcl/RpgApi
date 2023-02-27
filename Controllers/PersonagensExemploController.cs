@@ -41,5 +41,17 @@ namespace RpgApi.Controllers
             personagens.Add(personagem);
             return Ok(personagens);
         }
+
+        [HttpPut]
+        public IActionResult UpdatePersonagem(Personagem p) {
+            Personagem personagemAlterado = personagens.Find(pe => pe.Id == p.Id);
+            personagemAlterado.Nome = p.Nome;
+            personagemAlterado.PontosVida = p.PontosVida;
+            personagemAlterado.Forca = p.Forca;
+            personagemAlterado.Defesa = p.Defesa;
+            personagemAlterado.Inteligencia = p.Inteligencia;
+            personagemAlterado.Classe = p.Classe;
+            return Ok(personagens);
+        }
     }
 }
