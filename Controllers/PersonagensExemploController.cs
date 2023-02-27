@@ -42,7 +42,13 @@ namespace RpgApi.Controllers
             return Ok("Quantidade de personagens: " + personagens.Count);
         }
 
-        [HttpGet("GetSomaForca")]
+        [HttpGet("GetSemCavaleiro")]
+        public IActionResult GetSemCavaleiro() {
+            List<Personagem> listaBusca = personagens.FindAll(pe => pe.Classe != ClasseEnum.Cavaleiro);
+            return Ok(listaBusca);
+        }
+
+            [HttpGet("GetSomaForca")]
         public IActionResult GetSomaForca() {
             return Ok(personagens.Sum(pe => pe.Forca));
         }
