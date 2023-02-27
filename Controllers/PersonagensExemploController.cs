@@ -42,6 +42,11 @@ namespace RpgApi.Controllers
             return Ok("Quantidade de personagens: " + personagens.Count);
         }
 
+        [HttpGet("GetSomaForca")]
+        public IActionResult GetSomaForca() {
+            return Ok(personagens.Sum(pe => pe.Forca));
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetSingle(int id) {
             return Ok(personagens.FirstOrDefault(pe => pe.Id == id));
