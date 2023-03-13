@@ -56,14 +56,17 @@ namespace RpgApi.Controllers
 
         [HttpGet("GetRemovendoMago")]
         public IActionResult GetRemovendoMagos() {
-            Personagem pRemove = personagens.Find(pe => pe.Classe == ClasseEnum.Mago);
-            personagens.Remove(pRemove);
-            return Ok("Personagem removido: " + pRemove.Nome);
+            Personagem? pRemove = personagens.Find(pe => pe.Classe == ClasseEnum.Mago);
+            if(pRemove != null) {
+                personagens.Remove(pRemove);
+                return Ok("Personagem removido: " + pRemove.Nome);
+            } else
+                return Ok("Não há magos para remover");
         }
 
         [HttpGet("GetByForca/{forca}")]
-        public IActionResult Get(int forca) {
-            Personagem personagem = personagens.Find(p => p.Forca == forca);
+        public IActionResult GetByForca(int forca) {
+            Personagem? personagem = personagens.Find(p => p.Forca == forca);
             return Ok(personagem);
         }
 
@@ -99,13 +102,16 @@ namespace RpgApi.Controllers
         [HttpPut]
         public IActionResult UpdatePersonagem(Personagem p) {
             Personagem? personagemAlterado = personagens.Find(pe => pe.Id == p.Id);
-            personagemAlterado.Nome = p.Nome;
-            personagemAlterado.PontosVida = p.PontosVida;
-            personagemAlterado.Forca = p.Forca;
-            personagemAlterado.Defesa = p.Defesa;
-            personagemAlterado.Inteligencia = p.Inteligencia;
-            personagemAlterado.Classe = p.Classe;
-            return Ok(personagens);
+            if(personagemAlterado != null) {
+                personagemAlterado.Nome = p.Nome;
+                personagemAlterado.PontosVida = p.PontosVida;
+                personagemAlterado.Forca = p.Forca;
+                personagemAlterado.Defesa = p.Defesa;
+                personagemAlterado.Inteligencia = p.Inteligencia;
+                personagemAlterado.Classe = p.Classe;
+                return Ok(personagens);
+            } else
+                return BadRequest("Não existe um personagem com esse ID");
         }
 
         [HttpDelete("{id}")]
