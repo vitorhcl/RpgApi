@@ -4,17 +4,25 @@ using RpgApi.Models;
 using RpgApi.Data;
 using Microsoft.EntityFrameworkCore;
 using RpgApi.Utils;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RpgApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsuariosController : ControllerBase
     {
         private readonly DataContext _context;
-        public UsuariosController(DataContext context)
+        private readonly IConfiguration _configuration;
+        public UsuariosController(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("GetUser")]
@@ -60,6 +68,7 @@ namespace RpgApi.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpPost("Registrar")]
         public async Task<IActionResult> RegistrarUsuario(Usuario user)
         {
@@ -83,6 +92,7 @@ namespace RpgApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
         {
@@ -101,6 +111,9 @@ namespace RpgApi.Controllers
                     _context.Usuarios.Update(usuario);
                     await _context.SaveChangesAsync(); //Confirma a alteração no banco
 
+                    usuario.PasswordHash = null;
+                    usuario.PasswordSalt = null;
+                    usuario.Token = CriarToken(usuario);
                     return Ok(usuario);
                 }
             }
@@ -124,6 +137,29 @@ namespace RpgApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private string CriarToken(Usuario usuario)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Username)
+            };
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8
+                .GetBytes(_configuration.GetSection("ConfiguracaoToken:Chave").Value));
+
+            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -52,6 +52,8 @@ namespace RpgApi.Data
             user.PasswordSalt = salt;
             user.Foto = null;
             user.PasswordString = string.Empty;
+            
+            //user.Personagens.Add(this.Personagens.FirstOrDefault(p => p.Id == 1));
 
             modelBuilder.Entity<Usuario>().HasData(user);            
             //Fim da criação do usuário padrão.

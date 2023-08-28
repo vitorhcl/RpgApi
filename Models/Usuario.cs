@@ -23,6 +23,8 @@ namespace RpgApi.Models
         public string PasswordString { get; set; } //using System.ComponentModel.DataAnnotations.Schema;
         public List<Personagem> Personagens {get; set;}
 
+        [NotMapped]
+        public string Token { get; set; }
 
     }
 }
