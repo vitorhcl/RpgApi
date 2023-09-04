@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace RpgApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Jogador, Admin")]
     [ApiController]
     [Route("[Controller]")]
     public class PersonagensController : ControllerBase
@@ -17,12 +17,24 @@ namespace RpgApi.Controllers
         //Programação de toda a classe ficará aqui abaixo
         private readonly DataContext _context; //Declaração do atributo
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PersonagensController(DataContext context, IConfiguration configuration)
+        public PersonagensController(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             //Inicialização do atributo a partir de um parâmetro          
             _context = context;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private int ObterUsuarioId()
+        {
+            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        }
+
+        private string ObterPerfilUsuario()
+        {
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
 
         [HttpGet("{id}")] //Buscar pelo id
@@ -68,6 +80,8 @@ namespace RpgApi.Controllers
                 {
                     throw new System.Exception("Pontos de vida não pode ser maior que 100");
                 }
+                novoPersonagem.Usuario = await _context.Usuarios.FirstOrDefaultAsync(uBusca => uBusca.Id == ObterUsuarioId());
+
                 await _context.Personagens.AddAsync(novoPersonagem);
                 await _context.SaveChangesAsync();
 
@@ -88,6 +102,8 @@ namespace RpgApi.Controllers
                 {
                     throw new System.Exception("Pontos de vida não pode ser maior que 100");
                 }
+                novoPersonagem.Usuario = await _context.Usuarios.FirstOrDefaultAsync(uBusca => uBusca.Id == ObterUsuarioId());
+
                 _context.Personagens.Update(novoPersonagem);
                 int linhasAfetadas = await _context.SaveChangesAsync();
 
@@ -218,19 +234,18 @@ namespace RpgApi.Controllers
             }
         }
 
-        [HttpGet("GetByPerfil/{userId}")]
-        public async Task<IActionResult> GetByPerfilAsync(int userId)
+        [HttpGet("GetByPerfil")]
+        public async Task<IActionResult> GetByPerfilAsync()
         {
             try
             {
-                Usuario usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(x => x.Id == userId);
                 List<Personagem> lista = new List<Personagem>();
-                if (usuario.Perfil == "Admin")
+
+                if (ObterPerfilUsuario() == "Admin")
                     lista = await _context.Personagens.ToListAsync();
                 else
                     lista = await _context.Personagens
-                    .Where(p => p.Usuario.Id == userId).ToListAsync();
+                    .Where(p => p.Usuario.Id == ObterUsuarioId()).ToListAsync();
                 return Ok(lista);
             }
             catch (System.Exception ex)
